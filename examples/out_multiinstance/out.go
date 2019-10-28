@@ -3,10 +3,10 @@ package main
 import (
 	"C"
 	"fmt"
-	"log"
 	"unsafe"
 
 	"github.com/fluent/fluent-bit-go/output"
+	"github.com/fluent/fluent-bit-go/output/log"
 )
 
 //export FLBPluginRegister
@@ -17,7 +17,7 @@ func FLBPluginRegister(def unsafe.Pointer) int {
 //export FLBPluginInit
 func FLBPluginInit(plugin unsafe.Pointer) int {
 	id := output.FLBPluginConfigKey(plugin, "id")
-	log.Printf("[multiinstance] id = %q", id)
+	log.PErrorf(plugin, "[multiinstance] id = %q", id)
 	// Set the context to point to any Go variable
 	output.FLBPluginSetContext(plugin, id)
 
@@ -26,7 +26,7 @@ func FLBPluginInit(plugin unsafe.Pointer) int {
 
 //export FLBPluginFlush
 func FLBPluginFlush(data unsafe.Pointer, length C.int, tag *C.char) int {
-	log.Print("[multiinstance] Flush called for unknown instance")
+	log.PError("[multiinstance] Flush called for unknown instance")
 	return output.FLB_OK
 }
 
@@ -34,7 +34,7 @@ func FLBPluginFlush(data unsafe.Pointer, length C.int, tag *C.char) int {
 func FLBPluginFlushCtx(ctx, data unsafe.Pointer, length C.int, tag *C.char) int {
 	// Type assert context back into the original type for the Go variable
 	id := output.FLBPluginGetContext(ctx).(string)
-	log.Printf("[multiinstance] Flush called for id: %s", id)
+	log.PErrorf("[multiinstance] Flush called for id: %s", id)
 
 	dec := output.NewDecoder(data, int(length))
 

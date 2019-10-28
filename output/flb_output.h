@@ -22,6 +22,7 @@
 
 struct flb_api {
     char *(*output_get_property) (char *, void *);
+    void (*log_error) (char *fmt, ...);
 };
 
 struct flb_plugin_proxy_context {
@@ -42,6 +43,12 @@ char *output_get_property(char *key, void *plugin)
 {
     struct flbgo_output_plugin *p = plugin;
     return p->api->output_get_property(key, p->o_ins);
+}
+
+void log_error(void *plugin, char *msg)
+{
+    struct flbgo_output_plugin *p = plugin;
+    p->api->log_error("%s", msg);
 }
 
 #endif

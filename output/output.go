@@ -79,3 +79,9 @@ func FLBPluginSetContext(plugin unsafe.Pointer, ctx interface{}) {
 func FLBPluginGetContext(i unsafe.Pointer) interface{} {
 	return contexts[int(uintptr(i))]
 }
+
+func FLBPluginLogError(plugin unsafe.Pointer, msg string) {
+	_msg := C.CString(msg)
+	C.log_error(plugin, _msg)
+	C.free(unsafe.Pointer(_msg))
+}
